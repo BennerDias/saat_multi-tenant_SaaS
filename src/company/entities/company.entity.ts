@@ -1,11 +1,14 @@
 import { IsNotEmpty } from 'class-validator';
+import { User } from 'src/user/entities/user.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Service } from '../../service/entities/service.entity';
 
 @Entity({ name: 'tb_companies' })
 export class Company {
@@ -16,7 +19,7 @@ export class Company {
   @IsNotEmpty()
   name: string;
 
-  @Column({ length: 20, nullable: true })
+  @Column({ unique: true, nullable: true })
   cnpj: string;
 
   @Column({ length: 4000, nullable: true })
@@ -40,4 +43,10 @@ export class Company {
 
   @UpdateDateColumn({ name: 'updated_at' })
   updated_at: Date;
+
+  @OneToMany(() => Service, (service) => service.company)
+  services: Service[];
+
+  @OneToMany(() => User, (user) => user.company)
+  user: User;
 }

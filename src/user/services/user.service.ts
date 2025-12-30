@@ -2,12 +2,14 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../entities/user.entity';
 import { Repository } from 'typeorm';
+import { Bcrypt } from '../../auth/bcrypt/bcrypt';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
+    private bcrypt: Bcrypt,
   ) {}
 
   async findByEmail(email: string): Promise<User | null> {
@@ -25,7 +27,7 @@ export class UserService {
   async findById(id: number): Promise<User> {
     const user = await this.userRepository.findOne({
       where: {
-        id,
+        id: id,
       },
     });
 
@@ -40,7 +42,7 @@ export class UserService {
     if (findUser)
       throw new HttpException('User already exists!', HttpStatus.BAD_REQUEST);
 
-    // user.password_hash = await this.bcrypt.hashPassword(user.password_hash);
+    user.password = await this.bcrypt.criptografarSenha(user.password);
     return await this.userRepository.save(user);
   }
 
@@ -52,7 +54,8 @@ export class UserService {
     if (findUser && findUser.id !== user.id)
       throw new HttpException('e-mail already exists!', HttpStatus.BAD_REQUEST);
 
-    // user.password_hash = await this.bcrypt.passwordPassword(user.password_hash);
+    user.password = await this.bcrypt.criptografarSenha(user.password);
+
     return await this.userRepository.save(user);
   }
 }

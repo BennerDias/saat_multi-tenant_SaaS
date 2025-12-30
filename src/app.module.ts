@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { User } from './users/entities/users.entity';
-import { UserModule } from './users/users.module';
+import { CompanyModule } from './company/company.module';
+import { UserModule } from './user/users.module';
 @Module({
   imports: [
     TypeOrmModule.forRoot({
@@ -11,11 +11,12 @@ import { UserModule } from './users/users.module';
       username: 'root',
       password: 'root',
       database: 'db_saat',
-      entities: [User],
+      autoLoadEntities: true,
       synchronize: true,
       logging: true,
     }),
     UserModule,
+    CompanyModule,
   ],
   controllers: [],
   providers: [],

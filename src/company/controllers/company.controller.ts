@@ -23,13 +23,13 @@ export class CompanyController {
     return this.CompanyService.findAll();
   }
 
-  @Get()
+  @Get('/:id')
   @HttpCode(HttpStatus.OK)
   findById(@Param('id', ParseIntPipe) id: number): Promise<Company> {
     return this.CompanyService.findById(id);
   }
 
-  @Get()
+  @Get('/company/:name')
   @HttpCode(HttpStatus.OK)
   findByName(@Param('name') name: string): Promise<Company[]> {
     return this.CompanyService.findAllByName(name);

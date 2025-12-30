@@ -10,9 +10,13 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Appointment } from '../../appointment/entities/appointment.entity';
+import { Company } from '../../company/entities/company.entity';
 
 export enum UserRole {
   ADMIN = 'admin',
@@ -27,15 +31,18 @@ export class User {
   @Column({ length: 255, nullable: false })
   name: string;
 
+  @Column({ length: 5000 })
+  photo: string;
+
   @IsEmail()
   @IsNotEmpty()
-  @Column({ length: 255, nullable: false })
+  @Column({ length: 255, nullable: false, unique: true })
   email: string;
 
   @MinLength(8)
   @IsNotEmpty()
   @Column({ length: 255, nullable: false })
-  password_hash: string;
+  password: string;
 
   @IsEnum(UserRole)
   @Column({
@@ -54,4 +61,10 @@ export class User {
 
   @UpdateDateColumn({ name: 'updated_at' })
   updated_at: Date;
+
+  @OneToMany(() => Appointment, (appointment) => appointment.user)
+  appointments: Appointment[];
+
+  @OneToOne(() => Company, (company) => company.user)
+  company: Company;
 }
