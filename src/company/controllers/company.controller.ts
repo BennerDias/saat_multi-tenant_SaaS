@@ -46,7 +46,7 @@ export class CompanyController {
     return this.CompanyService.create(dto);
   }
 
-  @Put()
+  @Put(':id')
   @HttpCode(HttpStatus.OK)
   @ApiResponse({ type: CompanyResponseDto })
   update(

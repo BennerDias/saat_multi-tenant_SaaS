@@ -1,8 +1,13 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../entities/user.entity';
 import { Repository } from 'typeorm';
 import { Bcrypt } from '../../auth/bcrypt/bcrypt';
+import { CreateUserDto } from '../dto/create-user.dto';
+import { UserResponseDto } from '../dto/user-response.dto';
+import { UpdateUserDto } from '../dto/update-user.dto';
+import { UserMapper } from '../mappers/user.mapper';
 
 @Injectable()
 export class UserService {
@@ -36,26 +41,39 @@ export class UserService {
     return user;
   }
 
-  async create(user: User): Promise<User> {
-    const findUser = await this.findByEmail(user.email);
+  async create(dto: CreateUserDto): Promise<UserResponseDto> {
+    const findUser = await this.findByEmail(dto.email);
 
     if (findUser)
       throw new HttpException('User already exists!', HttpStatus.BAD_REQUEST);
 
-    user.password = await this.bcrypt.criptografarSenha(user.password);
-    return await this.userRepository.save(user);
+    dto.password = await this.bcrypt.criptografarSenha(dto.password);
+    return await this.userRepository.save(dto);
   }
 
-  async update(user: User): Promise<User> {
-    await this.findById(user.id);
+  async update(id: number, dto: UpdateUserDto): Promise<UserResponseDto> {
+    const user = await this.findById(id);
 
-    const findUser = await this.findByEmail(user.email);
+    if (dto.email && dto.email !== user.email) {
+      const existing = await this.findByEmail(dto.email);
+      if (existing && existing.id !== user.id) {
+        throw new HttpException(
+          'E-mail already exists!',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+    }
 
-    if (findUser && findUser.id !== user.id)
-      throw new HttpException('e-mail already exists!', HttpStatus.BAD_REQUEST);
+    if (dto.password) {
+      dto.password = await this.bcrypt.criptografarSenha(dto.password);
+    }
+    delete dto.role;
+    delete dto.companyId;
 
-    user.password = await this.bcrypt.criptografarSenha(user.password);
+    Object.assign(user, dto);
 
-    return await this.userRepository.save(user);
+    const updated = await this.userRepository.save(user);
+
+    return UserMapper.toResponse(updated);
   }
 }

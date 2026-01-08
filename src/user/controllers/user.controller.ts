@@ -11,6 +11,10 @@ import {
 } from '@nestjs/common';
 import { UserService } from '../services/user.service';
 import { User } from '../entities/user.entity';
+import { ApiResponse } from '@nestjs/swagger';
+import { UserResponseDto } from '../dto/user-response.dto';
+import { CreateUserDto } from '../dto/create-user.dto';
+import { UpdateUserDto } from '../dto/update-user.dto';
 
 @Controller('/users')
 export class UserController {
@@ -35,14 +39,19 @@ export class UserController {
   }
 
   @Post('/register')
+  @ApiResponse({ type: UserResponseDto })
   @HttpCode(HttpStatus.CREATED)
-  async create(@Body() user: User): Promise<User> {
-    return this.userService.create(user);
+  async create(@Body() dto: CreateUserDto): Promise<UserResponseDto> {
+    return this.userService.create(dto);
   }
 
-  @Put('/update')
+  @Put(':id')
+  @ApiResponse({ type: UserResponseDto })
   @HttpCode(HttpStatus.OK)
-  async update(@Body() user: User): Promise<User> {
-    return this.userService.update(user);
+  async update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: UpdateUserDto,
+  ): Promise<UserResponseDto> {
+    return this.userService.update(id, dto);
   }
 }
