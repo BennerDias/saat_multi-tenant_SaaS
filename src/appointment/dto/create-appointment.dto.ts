@@ -1,5 +1,4 @@
 import { ArrayMinSize, IsArray, IsDateString, IsInt } from 'class-validator';
-
 export class CreateAppointmentDto {
   @IsInt()
   userId: number;
