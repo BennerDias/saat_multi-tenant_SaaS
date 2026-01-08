@@ -1,3 +1,4 @@
+import { ApiResponse } from '@nestjs/swagger';
 import { Company } from '../entities/company.entity';
 import { CompanyService } from './../services/company.service';
 import {
@@ -12,6 +13,9 @@ import {
   Post,
   Put,
 } from '@nestjs/common';
+import { CompanyResponseDto } from '../dto/company-response.dto';
+import { CreateCompanyDto } from '../dto/create-company.dto';
+import { UpdateCompanyDto } from '../dto/update-company.dto';
 
 @Controller('/companies')
 export class CompanyController {
@@ -36,15 +40,20 @@ export class CompanyController {
   }
 
   @Post()
+  @ApiResponse({ type: CompanyResponseDto })
   @HttpCode(HttpStatus.OK)
-  create(@Body() company: Company): Promise<Company> {
-    return this.CompanyService.create(company);
+  create(@Body() dto: CreateCompanyDto): Promise<CompanyResponseDto> {
+    return this.CompanyService.create(dto);
   }
 
   @Put()
   @HttpCode(HttpStatus.OK)
-  update(@Body() company: Company): Promise<Company> {
-    return this.CompanyService.update(company);
+  @ApiResponse({ type: CompanyResponseDto })
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: UpdateCompanyDto,
+  ): Promise<CompanyResponseDto> {
+    return this.CompanyService.update(id, dto);
   }
 
   @Delete('/:id')

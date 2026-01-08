@@ -2,6 +2,9 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Company } from '../entities/company.entity';
 import { DeleteResult, ILike, Repository } from 'typeorm';
+import { CreateCompanyDto } from '../dto/create-company.dto';
+import { CompanyResponseDto } from '../dto/company-response.dto';
+import { UpdateCompanyDto } from '../dto/update-company.dto';
 
 @Injectable()
 export class CompanyService {
@@ -34,14 +37,16 @@ export class CompanyService {
     });
   }
 
-  async create(company: Company): Promise<Company> {
-    return await this.companyRepository.save(company);
+  async create(dto: CreateCompanyDto): Promise<CompanyResponseDto> {
+    return await this.companyRepository.save(dto);
   }
 
-  async update(company: Company): Promise<Company> {
-    await this.findById(company.id);
+  async update(id: number, dto: UpdateCompanyDto): Promise<CompanyResponseDto> {
+    const company = await this.findById(id);
 
-    return await this.companyRepository.save(company);
+    const updated = this.companyRepository.merge(company, dto);
+
+    return await this.companyRepository.save(updated);
   }
 
   async delete(id: number): Promise<DeleteResult> {
