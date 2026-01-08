@@ -1,11 +1,15 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { ArrayMinSize, IsArray, IsDateString, IsInt } from 'class-validator';
 export class CreateAppointmentDto {
+  @ApiProperty()
   @IsInt()
   userId: number;
 
+  @ApiProperty()
   @IsDateString()
   start_date: Date;
 
+  @ApiProperty()
   @IsArray()
   @ArrayMinSize(1)
   @IsInt({ each: true })
