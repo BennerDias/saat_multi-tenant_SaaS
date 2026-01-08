@@ -48,5 +48,5 @@ export class Company {
   services: Service[];
 
   @OneToMany(() => User, (user) => user.company)
-  user: User;
+  users: User[];
 }
