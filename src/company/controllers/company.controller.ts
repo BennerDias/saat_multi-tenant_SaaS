@@ -1,5 +1,4 @@
-import { ApiResponse } from '@nestjs/swagger';
-import { Company } from '../entities/company.entity';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { CompanyService } from './../services/company.service';
 import {
   Body,
@@ -12,53 +11,69 @@ import {
   ParseIntPipe,
   Post,
   Put,
+  Req,
+  UseGuards,
 } from '@nestjs/common';
 import { CompanyResponseDto } from '../dto/company-response.dto';
 import { CreateCompanyDto } from '../dto/create-company.dto';
 import { UpdateCompanyDto } from '../dto/update-company.dto';
+import { JwtAuthGuard } from '../../auth/guard/jwt-auth.guard';
+import { UserRole } from '../../user/entities/user.entity';
+import { Roles } from '../../auth/decorators/roles.decorator';
+import { RolesGuard } from '../../auth/guard/roles.guard';
 
+@ApiTags('Companies')
+@ApiBearerAuth()
 @Controller('/companies')
 export class CompanyController {
-  constructor(private readonly CompanyService: CompanyService) {}
+  constructor(private readonly companyService: CompanyService) {}
 
   @Get()
   @HttpCode(HttpStatus.OK)
-  findAll(): Promise<Company[]> {
-    return this.CompanyService.findAll();
+  findAll(): Promise<CompanyResponseDto[]> {
+    return this.companyService.findAll();
   }
 
   @Get('/:id')
   @HttpCode(HttpStatus.OK)
-  findById(@Param('id', ParseIntPipe) id: number): Promise<Company> {
-    return this.CompanyService.findById(id);
+  findById(@Param('id', ParseIntPipe) id: number): Promise<CompanyResponseDto> {
+    return this.companyService.findById(id);
   }
 
   @Get('/company/:name')
   @HttpCode(HttpStatus.OK)
-  findByName(@Param('name') name: string): Promise<Company[]> {
-    return this.CompanyService.findAllByName(name);
+  findByName(@Param('name') name: string): Promise<CompanyResponseDto[]> {
+    return this.companyService.findAllByName(name);
   }
 
   @Post()
-  @ApiResponse({ type: CompanyResponseDto })
-  @HttpCode(HttpStatus.OK)
-  create(@Body() dto: CreateCompanyDto): Promise<CompanyResponseDto> {
-    return this.CompanyService.create(dto);
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  @HttpCode(HttpStatus.CREATED)
+  create(
+    @Body() dto: CreateCompanyDto,
+    @Req() req,
+  ): Promise<CompanyResponseDto> {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
+    return this.companyService.create(dto, req.user.id);
   }
 
   @Put(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
   @HttpCode(HttpStatus.OK)
-  @ApiResponse({ type: CompanyResponseDto })
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body() dto: UpdateCompanyDto,
   ): Promise<CompanyResponseDto> {
-    return this.CompanyService.update(id, dto);
+    return this.companyService.update(id, dto);
   }
 
   @Delete('/:id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
   @HttpCode(HttpStatus.NO_CONTENT)
   delete(@Param('id', ParseIntPipe) id: number) {
-    return this.CompanyService.delete(id);
+    return this.companyService.delete(id);
   }
 }

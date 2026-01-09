@@ -20,8 +20,8 @@ export class UserResponseDto {
   @ApiProperty({ required: false })
   photo?: string;
 
-  @ApiProperty()
-  companyId: number;
+  @ApiProperty({ type: [Number], nullable: true })
+  companyIds?: number[];
 
   @ApiProperty()
   created_at: Date;

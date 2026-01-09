@@ -1,16 +1,25 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  ForbiddenException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Company } from '../entities/company.entity';
 import { DeleteResult, ILike, Repository } from 'typeorm';
 import { CreateCompanyDto } from '../dto/create-company.dto';
 import { CompanyResponseDto } from '../dto/company-response.dto';
 import { UpdateCompanyDto } from '../dto/update-company.dto';
+import { User, UserRole } from '../../user/entities/user.entity';
 
 @Injectable()
 export class CompanyService {
   constructor(
     @InjectRepository(Company)
     private companyRepository: Repository<Company>,
+
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
   ) {}
 
   async findAll(): Promise<Company[]> {
@@ -37,8 +46,17 @@ export class CompanyService {
     });
   }
 
-  async create(dto: CreateCompanyDto): Promise<CompanyResponseDto> {
-    return await this.companyRepository.save(dto);
+  async create(dto: CreateCompanyDto, userId: number) {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+
+    if (!user || user.role !== UserRole.ADMIN) {
+      throw new ForbiddenException('Only admins can create companies');
+    }
+
+    const company = this.companyRepository.create(dto);
+    company.owner = user;
+
+    return await this.companyRepository.save(company);
   }
 
   async update(id: number, dto: UpdateCompanyDto): Promise<CompanyResponseDto> {

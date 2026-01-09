@@ -33,7 +33,4 @@ export class CreateUserDto {
   @ApiProperty({ example: 'https://img.com/photo.png', required: false })
   @IsOptional()
   photo?: string;
-
-  @ApiProperty({ example: 1 })
-  companyId: number;
 }

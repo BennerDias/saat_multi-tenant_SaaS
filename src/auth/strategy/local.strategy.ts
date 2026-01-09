@@ -12,12 +12,12 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
   constructor(private readonly authService: AuthService) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     super();
-    this._usernameField = 'user';
+    this._usernameField = 'email';
     this._passwordField = 'password';
   }
 
-  async validate(user: string, password: string): Promise<any> {
-    const validaUsuario = await this.authService.validateUser(user, password);
+  async validate(email: string, password: string): Promise<any> {
+    const validaUsuario = await this.authService.validateUser(email, password);
     if (!validaUsuario)
       throw new UnauthorizedException('Usuário ou senha inválidos');
 

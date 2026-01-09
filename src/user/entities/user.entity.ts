@@ -10,9 +10,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  ManyToOne,
   OneToMany,
-  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -66,6 +64,9 @@ export class User {
   @OneToMany(() => Appointment, (appointment) => appointment.user)
   appointments: Appointment[];
 
-  @ManyToOne(() => Company, (company) => company.users)
-  company: Company;
+  @OneToMany(() => Company, (company) => company.owner, {
+    nullable: true,
+    onDelete: 'SET NULL',
+  })
+  ownedCompanies: Company[];
 }

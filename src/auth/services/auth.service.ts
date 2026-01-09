@@ -12,8 +12,8 @@ export class AuthService {
     private JwtService: JwtService,
   ) {}
 
-  async validateUser(user: string, password: string): Promise<any> {
-    const findUser = await this.userService.findByEmail(user);
+  async validateUser(email: string, password: string): Promise<any> {
+    const findUser = await this.userService.findByEmail(email);
 
     if (!findUser)
       throw new HttpException('User not found!', HttpStatus.NOT_FOUND);
@@ -33,8 +33,8 @@ export class AuthService {
   }
 
   async login(userLogin: UserLogin) {
-    const payload = { sub: userLogin.user };
-    const findUser = await this.userService.findByEmail(userLogin.user);
+    const payload = { sub: userLogin.email };
+    const findUser = await this.userService.findByEmail(userLogin.email);
 
     if (!findUser)
       throw new HttpException('User not found!', HttpStatus.NOT_FOUND);

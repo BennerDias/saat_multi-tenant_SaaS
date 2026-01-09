@@ -47,8 +47,12 @@ export class UserService {
     if (findUser)
       throw new HttpException('User already exists!', HttpStatus.BAD_REQUEST);
 
-    dto.password = await this.bcrypt.criptografarSenha(dto.password);
-    return await this.userRepository.save(dto);
+    const user = this.userRepository.create({
+      ...dto,
+      password: await this.bcrypt.criptografarSenha(dto.password),
+    });
+
+    return UserMapper.toResponse(await this.userRepository.save(user));
   }
 
   async update(id: number, dto: UpdateUserDto): Promise<UserResponseDto> {
@@ -68,7 +72,6 @@ export class UserService {
       dto.password = await this.bcrypt.criptografarSenha(dto.password);
     }
     delete dto.role;
-    delete dto.companyId;
 
     Object.assign(user, dto);
 

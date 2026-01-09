@@ -4,6 +4,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -16,7 +17,6 @@ export class Company {
   id: number;
 
   @Column({ length: 255, nullable: false })
-  @IsNotEmpty()
   name: string;
 
   @Column({ unique: true, nullable: true })
@@ -47,6 +47,9 @@ export class Company {
   @OneToMany(() => Service, (service) => service.company)
   services: Service[];
 
-  @OneToMany(() => User, (user) => user.company)
-  users: User[];
+  @ManyToOne(() => User, (user) => user.ownedCompanies, {
+    nullable: false,
+    onDelete: 'CASCADE',
+  })
+  owner: User;
 }

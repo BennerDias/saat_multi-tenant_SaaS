@@ -10,13 +10,15 @@ export class UserMapper {
       role: user.role,
       phone: user.phone,
       photo: user.photo,
-      companyId: user.company?.id ?? null,
+      companyIds: user.ownedCompanies
+        ? user.ownedCompanies.map((company) => company.id)
+        : [],
       created_at: user.created_at,
       updated_at: user.updated_at,
     };
   }
 
   static toResponseList(users: User[]): UserResponseDto[] {
-    return users.map(this.toResponse);
+    return users.map((user) => this.toResponse(user));
   }
 }
