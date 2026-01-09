@@ -13,7 +13,7 @@ export class ProdService implements TypeOrmOptionsFactory {
         rejectUnauthorized: false,
       },
       synchronize: true,
-      autoLoadEntities: false,
+      autoLoadEntities: true,
     };
   }
 }

@@ -17,14 +17,13 @@ export class CreateUserDto {
   @IsEmail()
   email: string;
 
-  @ApiProperty({ example: 'A12345#' })
+  @ApiProperty({ example: 'admin123' })
   @MinLength(8)
   password: string;
 
   @ApiProperty({ enum: UserRole, default: UserRole.CLIENT })
   @IsEnum(UserRole)
-  @IsOptional()
-  role?: UserRole;
+  role: UserRole;
 
   @ApiProperty({ example: '11999999999', required: false })
   @IsOptional()
