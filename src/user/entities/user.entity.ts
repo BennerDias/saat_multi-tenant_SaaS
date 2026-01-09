@@ -30,7 +30,11 @@ export class User {
   @Column({ length: 255, nullable: false })
   name: string;
 
-  @Column({ length: 5000 })
+  @Column({
+    length: 5000,
+    default:
+      'https://png.pngtree.com/element_our/20200610/ourmid/pngtree-character-default-avatar-image_2237203.jpg',
+  })
   photo: string;
 
   @IsEmail()
