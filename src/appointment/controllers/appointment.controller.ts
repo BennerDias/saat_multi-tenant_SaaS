@@ -13,6 +13,7 @@ import {
   ParseIntPipe,
   Post,
   Put,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 import { Appointment } from '../entities/appointment.entity';
@@ -25,8 +26,8 @@ export class AppointmentsController {
   constructor(private readonly appointmentsService: AppointmentsService) {}
 
   @Post()
-  create(@Body() createAppointmentDto: CreateAppointmentDto) {
-    return this.appointmentsService.create(createAppointmentDto);
+  create(@Body() createAppointmentDto: CreateAppointmentDto, @Req() req) {
+    return this.appointmentsService.create(createAppointmentDto, req.user);
   }
 
   @Get()

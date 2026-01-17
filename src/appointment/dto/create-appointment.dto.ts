@@ -3,7 +3,7 @@ import { ArrayMinSize, IsArray, IsDateString, IsInt } from 'class-validator';
 export class CreateAppointmentDto {
   @ApiProperty()
   @IsInt()
-  userId: number;
+  companyId: number;
 
   @ApiProperty()
   @IsDateString()

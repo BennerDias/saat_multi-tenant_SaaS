@@ -5,9 +5,16 @@ import { Service } from '../service/entities/service.entity';
 import { User } from '../user/entities/user.entity';
 import { AppointmentsService } from './services/appointment.service';
 import { AppointmentsController } from './controllers/appointment.controller';
+import { Membership } from '../membership/entity/membership.entity';
+import { MembershipModule } from '../membership/membership.module';
+import { CompanyModule } from '../company/company.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Appointment, Service, User])],
+  imports: [
+    TypeOrmModule.forFeature([Appointment, Service, User, Membership]),
+    MembershipModule,
+    CompanyModule,
+  ],
   providers: [AppointmentsService],
   controllers: [AppointmentsController],
   exports: [AppointmentsService],

@@ -71,7 +71,6 @@ export class UserService {
     if (dto.password) {
       dto.password = await this.bcrypt.criptografarSenha(dto.password);
     }
-    delete dto.role;
 
     Object.assign(user, dto);
 

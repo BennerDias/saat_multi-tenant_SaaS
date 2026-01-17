@@ -18,9 +18,6 @@ import { CompanyResponseDto } from '../dto/company-response.dto';
 import { CreateCompanyDto } from '../dto/create-company.dto';
 import { UpdateCompanyDto } from '../dto/update-company.dto';
 import { JwtAuthGuard } from '../../auth/guard/jwt-auth.guard';
-import { UserRole } from '../../user/entities/user.entity';
-import { Roles } from '../../auth/decorators/roles.decorator';
-import { RolesGuard } from '../../auth/guard/roles.guard';
 
 @ApiTags('Companies')
 @ApiBearerAuth()
@@ -47,8 +44,7 @@ export class CompanyController {
   }
 
   @Post()
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.ADMIN)
+  @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.CREATED)
   create(
     @Body() dto: CreateCompanyDto,
@@ -59,8 +55,7 @@ export class CompanyController {
   }
 
   @Put(':id')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.ADMIN)
+  @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
   update(
     @Param('id', ParseIntPipe) id: number,
@@ -70,8 +65,7 @@ export class CompanyController {
   }
 
   @Delete('/:id')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.ADMIN)
+  @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   delete(@Param('id', ParseIntPipe) id: number) {
     return this.companyService.delete(id);

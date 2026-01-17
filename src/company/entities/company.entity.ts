@@ -10,6 +10,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { Service } from '../../service/entities/service.entity';
+import { Membership } from '../../membership/entity/membership.entity';
 
 @Entity({ name: 'tb_companies' })
 export class Company {
@@ -47,9 +48,6 @@ export class Company {
   @OneToMany(() => Service, (service) => service.company)
   services: Service[];
 
-  @ManyToOne(() => User, (user) => user.ownedCompanies, {
-    nullable: false,
-    onDelete: 'CASCADE',
-  })
-  owner: User;
+  @OneToMany(() => Membership, (membership) => membership.company)
+  memberships: Membership[];
 }

@@ -9,7 +9,7 @@ import { AppointmentServiceModule } from './appointment_services/appointmentserv
 import { AppointmentModule } from './appointment/appointment.module';
 import { AppController } from './app.controller';
 import { ProdService } from './data/services/prod.service';
-// import { DevService } from './data/services/dev.service';
+import { DevService } from './data/services/dev.service';
 @Module({
   imports: [
     ConfigModule.forRoot(),

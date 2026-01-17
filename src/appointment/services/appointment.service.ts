@@ -12,6 +12,8 @@ import { Service } from '../../service/entities/service.entity';
 import { User } from '../../user/entities/user.entity';
 import { CreateAppointmentDto } from '../dto/create-appointment.dto';
 import { DeleteResult } from 'typeorm/browser';
+import { Company } from '../../company/entities/company.entity';
+import { MembershipService } from '../../membership/service/membership.service';
 
 @Injectable()
 export class AppointmentsService {
@@ -22,46 +24,44 @@ export class AppointmentsService {
     @InjectRepository(Service)
     private readonly serviceRepo: Repository<Service>,
 
-    @InjectRepository(User)
-    private readonly userRepo: Repository<User>,
+    @InjectRepository(Company)
+    private readonly companyRepo: Repository<Company>,
+
+    private readonly membershipService: MembershipService,
   ) {}
 
-  async create(dto: CreateAppointmentDto) {
-    const user = await this.userRepo.findOneBy({ id: dto.userId });
-    if (!user) throw new NotFoundException('Usuário não encontrado!');
+  async create(dto: CreateAppointmentDto, user: User) {
+    const company = await this.companyRepo.findOneBy({ id: dto.companyId });
 
-    const serviceIds = Array.isArray(dto.serviceIds)
-      ? dto.serviceIds
-      : [dto.serviceIds];
-    const services = await this.serviceRepo.findBy({ id: In(serviceIds) });
-
-    if (services.length !== dto.serviceIds.length) {
-      throw new NotFoundException('Um ou mais serviços não foram encontrados');
+    if (!company) {
+      throw new NotFoundException('Empresa não encontrada!');
     }
 
-    const appointment = new Appointment();
-    appointment.start_date = new Date(dto.start_date);
-    appointment.user = user;
+    await this.membershipService.createClientIfNotExists(user, company);
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    appointment.items = services.map((service) => ({
-      service: service,
-      price_at_appointment: service.price,
-      duration_minutes: service.duration_minutes,
-      appointment: appointment,
-    })) as any;
+    const services = await this.serviceRepo.find({
+      where: { id: In(dto.serviceIds) },
+    });
 
-    const saved = await this.appointmentRepo.save(appointment);
+    if (services.length !== dto.serviceIds.length) {
+      throw new HttpException(
+        'Um ou mais serviços inválidos',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
 
-    // Remove back-reference to avoid circular structure when serializing to JSON
-    const sanitized = {
-      ...saved,
-      items:
-        saved.items?.map(({ appointment: _a, ...rest }) => rest as any) ?? [],
-    } as any;
+    const appointment = this.appointmentRepo.create({
+      user,
+      company,
+      start_date: dto.start_date,
+      items: services.map((service) => ({
+        service,
+        price_at_appointment: service.price,
+        duration_minutes: service.duration_minutes,
+      })),
+    });
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-    return sanitized;
+    return this.appointmentRepo.save(appointment);
   }
 
   async findAll() {

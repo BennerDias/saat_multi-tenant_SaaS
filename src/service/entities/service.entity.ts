@@ -22,9 +22,11 @@ export class Service {
   @Column()
   duration_minutes: number;
 
+  // Muitos serviços para uma companhia
   @ManyToOne(() => Company, (company) => company.services)
   company: Company;
 
+  // Um serviço para muitos agendamentos (corte degradê em vários agendamentos por ex.)
   @OneToMany(
     () => AppointmentService,
     (appointmentService) => appointmentService.service,

@@ -1,10 +1,4 @@
-import {
-  IsEmail,
-  IsEnum,
-  IsNotEmpty,
-  IsOptional,
-  MinLength,
-} from 'class-validator';
+import { IsEmail, IsNotEmpty, IsOptional, MinLength } from 'class-validator';
 
 import {
   Column,
@@ -15,12 +9,8 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { Appointment } from '../../appointment/entities/appointment.entity';
-import { Company } from '../../company/entities/company.entity';
+import { Membership } from '../../membership/entity/membership.entity';
 
-export enum UserRole {
-  ADMIN = 'admin',
-  CLIENT = 'client',
-}
 @Entity({ name: 'tb_users' })
 export class User {
   @PrimaryGeneratedColumn()
@@ -47,14 +37,6 @@ export class User {
   @Column({ length: 255, nullable: false })
   password: string;
 
-  @IsEnum(UserRole)
-  @Column({
-    type: 'enum',
-    enum: UserRole,
-    default: UserRole.CLIENT,
-  })
-  role: UserRole;
-
   @IsOptional()
   @Column({ length: 20, nullable: true })
   phone?: string;
@@ -65,12 +47,11 @@ export class User {
   @UpdateDateColumn({ name: 'updated_at' })
   updated_at: Date;
 
+  //Um usuário pra vários agendamentos
   @OneToMany(() => Appointment, (appointment) => appointment.user)
   appointments: Appointment[];
 
-  @OneToMany(() => Company, (company) => company.owner, {
-    nullable: true,
-    onDelete: 'SET NULL',
-  })
-  ownedCompanies: Company[];
+  //Um usuário pra vários tipos de membro (o mesmo usuário pode ser dono da barbearia x, cliente da y, cliente da z)
+  @OneToMany(() => Membership, (membership) => membership.user)
+  memberships: Membership[];
 }

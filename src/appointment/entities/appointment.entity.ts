@@ -9,6 +9,7 @@ import {
 import { PrimaryGeneratedColumn } from 'typeorm';
 import { User } from '../../user/entities/user.entity';
 import { AppointmentService } from '../../appointment_services/entities/appointment_services.entity';
+import { Company } from '../../company/entities/company.entity';
 
 @Entity({ name: 'tb_appointments' })
 export class Appointment {
@@ -23,6 +24,9 @@ export class Appointment {
 
   @ManyToOne(() => User, (user) => user.appointments)
   user: User;
+
+  @ManyToOne(() => Company)
+  company: Company;
 
   @OneToMany(() => AppointmentService, (item) => item.appointment, {
     cascade: true,
