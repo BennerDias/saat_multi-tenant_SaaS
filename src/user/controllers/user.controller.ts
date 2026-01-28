@@ -32,7 +32,7 @@ export class UserController {
     return this.userService.findById(id);
   }
 
-  @Get('/user/:email')
+  @Get('/mail/:email')
   @HttpCode(HttpStatus.OK)
   findByEmail(@Param('email') email: string): Promise<User | null> {
     return this.userService.findByEmail(email);

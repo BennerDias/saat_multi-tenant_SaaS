@@ -40,11 +40,7 @@ export class AuthService {
       throw new HttpException('User not found!', HttpStatus.NOT_FOUND);
 
     return {
-      id: findUser.id,
-      name: findUser.name,
-      user: findUser.email,
-      senha: '',
-      photo: findUser.photo,
+      ...findUser,
       token: `Bearer ${this.JwtService.sign(payload)}`,
     };
   }

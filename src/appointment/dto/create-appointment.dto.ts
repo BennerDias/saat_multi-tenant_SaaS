@@ -9,6 +9,8 @@ export class CreateAppointmentDto {
   @IsDateString()
   start_date: Date;
 
+  // Colocar numero de telefone do cliente.
+
   @ApiProperty()
   @IsArray()
   @ArrayMinSize(1)

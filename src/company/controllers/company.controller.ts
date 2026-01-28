@@ -19,7 +19,7 @@ import { CreateCompanyDto } from '../dto/create-company.dto';
 import { UpdateCompanyDto } from '../dto/update-company.dto';
 import { JwtAuthGuard } from '../../auth/guard/jwt-auth.guard';
 
-@ApiTags('Companies')
+@ApiTags('companies')
 @ApiBearerAuth()
 @Controller('/companies')
 export class CompanyController {

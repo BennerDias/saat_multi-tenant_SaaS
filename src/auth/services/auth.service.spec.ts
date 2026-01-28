@@ -17,7 +17,10 @@ describe('AuthService', () => {
         AuthService,
         { provide: getRepositoryToken(UserLogin), useValue: repoMock },
         { provide: UserService, useValue: mockUserService },
-        { provide: Bcrypt, useValue: { compararSenhas: jest.fn(), criptografarSenha: jest.fn() } },
+        {
+          provide: Bcrypt,
+          useValue: { compararSenhas: jest.fn(), criptografarSenha: jest.fn() },
+        },
         { provide: JwtService, useValue: { sign: jest.fn() } },
       ],
     }).compile();

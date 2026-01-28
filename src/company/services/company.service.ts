@@ -5,7 +5,6 @@ import { DeleteResult, ILike, Repository } from 'typeorm';
 import { CreateCompanyDto } from '../dto/create-company.dto';
 import { CompanyResponseDto } from '../dto/company-response.dto';
 import { UpdateCompanyDto } from '../dto/update-company.dto';
-import { User } from '../../user/entities/user.entity';
 import { MembershipService } from '../../membership/service/membership.service';
 
 @Injectable()
@@ -23,9 +22,7 @@ export class CompanyService {
 
   async findById(id: number) {
     const company = await this.companyRepository.findOne({
-      where: {
-        id,
-      },
+      where: { id },
     });
     if (!company)
       throw new HttpException('Company not found!', HttpStatus.NOT_FOUND);
@@ -41,27 +38,24 @@ export class CompanyService {
     });
   }
 
-  async create(dto: CreateCompanyDto, user: User) {
-    const company = this.companyRepository.create(dto);
+  async create(dto: CreateCompanyDto, userId: number): Promise<Company> {
+    const newCompany = this.companyRepository.create(dto);
 
-    await this.companyRepository.save(company);
+    const savedCompany = await this.companyRepository.save(newCompany);
 
-    await this.membershipService.createOwner(user, company);
+    await this.membershipService.createOwner({ id: userId }, savedCompany);
 
-    return company;
+    return savedCompany;
   }
 
   async update(id: number, dto: UpdateCompanyDto): Promise<CompanyResponseDto> {
     const company = await this.findById(id);
-
     const updated = this.companyRepository.merge(company, dto);
-
     return await this.companyRepository.save(updated);
   }
 
   async delete(id: number): Promise<DeleteResult> {
     await this.findById(id);
-
     return await this.companyRepository.delete(id);
   }
 }

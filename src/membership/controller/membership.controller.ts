@@ -5,10 +5,13 @@ import { MembershipService } from '../service/membership.service';
 @Controller('memberships')
 @UseGuards(AuthGuard('jwt'))
 export class MembershipController {
-  constructor(private service: MembershipService) {}
+  constructor(
+    private membershipService: MembershipService,
+    // REMOVIDO: private companyService: CompanyService <-- TIRE ISSO
+  ) {}
 
   @Get('my/:companyId')
   getMyRole(@Req() req, @Param('companyId') companyId: number) {
-    return this.service.findByUserAndCompany(req.user.id, companyId);
+    return this.membershipService.findByUserAndCompany(req.user.id, companyId);
   }
 }
